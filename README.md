@@ -49,6 +49,11 @@ El objetivo de este repositorio es acelerar el despliegue de aplicaciones basada
 └── scripts
     └── deploy_terraform_environment.sh
 ```
+Este repositorio gobierna la configuración de los elementos del clúster mediante el repositorio de aks-gitops-cluster-configuracion en donde se encuentra las configuraciones post aprovisionamiento y configuración del addons de gitops.
+
+```bash
+git clone https://github.com/iesussan/aks-gitops-cluster-configuration
+```
 
 ## Configuración y Despliegue
 
@@ -58,7 +63,7 @@ El objetivo de este repositorio es acelerar el despliegue de aplicaciones basada
 2. **Terraform**: Instala [Terraform](https://www.terraform.io/downloads.html).
 3. **Azure Developer CLI (azd)**: Instala [Azure Developer CLI](https://learn.microsoft.com/es-es/azure/developer/azure-developer-cli).
 
-Adicionalmente tu suscripcion debe contar con los siguientes providers activos:
+Adicionalmente tu suscripción debe contar con los siguientes providers activos:
 
 
 ```bash
