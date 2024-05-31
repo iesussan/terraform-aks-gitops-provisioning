@@ -58,6 +58,15 @@ El objetivo de este repositorio es acelerar el despliegue de aplicaciones basada
 2. **Terraform**: Instala [Terraform](https://www.terraform.io/downloads.html).
 3. **Azure Developer CLI (azd)**: Instala [Azure Developer CLI](https://learn.microsoft.com/es-es/azure/developer/azure-developer-cli).
 
+Adicionalmente tu suscripcion debe contar con los siguientes providers activos:
+
+
+```bash
+az provider register --namespace Microsoft.Kubernetes
+az provider register --namespace Microsoft.ContainerService
+az provider register --namespace Microsoft.KubernetesConfiguration
+```
+
 ### Autenticación
 
 Antes de ejecutar el despliegue, asegúrate de autenticarte en Azure y exportar las siguientes variables de entorno:
