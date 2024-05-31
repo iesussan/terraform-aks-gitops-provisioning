@@ -40,14 +40,6 @@ resource "azurerm_kubernetes_cluster" "this" {
   
   }
 
-  # dynamic "api_server_access_profile" {
-  #   for_each = var.private_cluster_enabled == true ? [1] : [0]
-  #   content {
-  #         vnet_integration_enabled = true
-  #         subnet_id                = var.kubernetes_apiserver_subnet_id
-  #   }
-  # }
-
   identity {
     type = var.identity
   }
@@ -104,12 +96,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "this_user_nodepool" {
 
   depends_on = [ azurerm_kubernetes_cluster.this ]
 }
-
-
-# data "azurerm_public_ip" "this" {
-#   name                = reverse(split("/", tolist(azurerm_kubernetes_cluster.this.network_profile.0.load_balancer_profile.0.effective_outbound_ips)[0]))[0]
-#   resource_group_name = azurerm_kubernetes_cluster.this.node_resource_group
-# }
 
 resource "azurerm_role_assignment" "this" {
   scope                = var.resource_group_id
@@ -206,84 +192,3 @@ resource "azurerm_monitor_diagnostic_setting" "aks_diagnostic_setting" {
   }
   depends_on = [ azurerm_kubernetes_cluster.this ]
 }
-
-# ###############################################################################################
-#  ################ Nginx Ingress Controller  Configuration # #####################
-# ###############################################################################################
-
-# resource "helm_release" "nginx_ingress" {
-#   name       = "nginx-ingress"
-#   repository = "https://kubernetes.github.io/ingress-nginx"
-#   chart      = "ingress-nginx"
-#   version    = "4.8.3" 
-#   namespace  = "ingress-nginx"
-
-#   set {
-#     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
-#     value = "true"
-#   }
-
-#   set {
-#     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
-#     value = "/healthz"
-#   }
-
-#   set {
-#       name  = "controller.metrics.enabled"
-#       value = "true"
-#     }
-
-#     set {
-#       name  = "controller.metrics.serviceMonitor.enabled"
-#       value = "true"
-#     }
-    
-#     set {
-#       name  = "controller.metrics.serviceMonitor.additionalLabels.release"
-#       value = "prometheus"
-#     }
-
-# depends_on = [ kubernetes_namespace.this ]
-# }
-
-
-# ###############################################################################################
-#  ################ Prometheus Configuration # #####################
-# ###############################################################################################
-
-# resource "helm_release" "prometheus" {
-#   name             = "prometheus"
-#   repository       = "https://prometheus-community.github.io/helm-charts"
-#   chart            = "kube-prometheus-stack"
-#   namespace        = "prometheus"
-#   create_namespace = true
-#   timeout          = 600
-
-#   values = [
-#     "${file("${path.module}/configuration/kube-prometheus-stack-custom-values.yaml")}"
-#   ]
-
-#   set {
-#     name  = "prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues"
-#     value = "false"
-#   }
-
-#   set {
-#     name  = "prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues"
-#     value = "false"
-#   }
-#   depends_on = [ helm_release.prometheus ]
-# }
-
-# resource "kubectl_manifest" "ama_metrics_prometheus_config_configmap" {
-#   yaml_body = file("${path.module}/configuration/ama-metrics-prometheus-config-configmap.yaml")
-#   depends_on = [ helm_release.prometheus ]
-# }
-
-# # Apply the ama-metrics-settings-configmap to your cluster.
-# resource "kubectl_manifest" "ama_metrics_settings_configmap" {
-#   yaml_body = file("${path.module}/configuration/ama-metrics-settings-configmap.yaml")
-#   depends_on = [ helm_release.prometheus ]
-# }
-
-# ###############################################################################################
